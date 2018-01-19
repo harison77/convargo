@@ -176,10 +176,27 @@ deliveries.forEach(function(delivery){
 			{
 				decreasedPriceVol = 0.5;
 			}
-			
+
+			//unique formula for the delivery price
+			//display the id of the delivery
+			//display the price
 			delivery.price = delivery.distance*(trucker.pricePerKm*decreasedPriceVol) + delivery.volume * trucker.pricePerVolume;
 			console.log(delivery.id + ":");
-			console.log(delivery.price);
+			console.log("delivery price = " + delivery.price);
+
+			//defines the commission, 30% of the delivery price
+			var commission = delivery.price*0.3;
+
+			//split the commission
+			delivery.commission.insurance = commission/2;
+			delivery.commission.treasury = Math.ceil(delivery.distance/500);
+			delivery.commission.convargo = commission - delivery.commission.insurance - delivery.commission.treasury;
+
+			//display in the console 
+			console.log("commission = "+commission);
+			console.log("insurance = "+delivery.commission.insurance);
+			console.log("convargo ="+delivery.commission.convargo);
+
 		}
 	});
 });
