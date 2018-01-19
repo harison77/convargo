@@ -145,6 +145,53 @@ const actors = [{
   }]
 }];
 
+
 console.log(truckers);
 console.log(deliveries);
 console.log(actors);
+
+
+
+
+deliveries.forEach(function(delivery){
+
+	truckers.forEach(function(trucker){
+
+		//price decrease depends on the volume 
+		//1 means there's no changes
+		var decreasedPriceVol = 1;
+
+		if (trucker.id ==delivery.truckerId)
+		{
+
+			if ((delivery.volume >=5) && (delivery.volume <10))
+			{
+				decreasedPriceVol = 0.9;
+			}
+			if ((delivery.volume >=10) && (delivery.volume <25))
+			{
+				decreasedPriceVol = 0.7;
+			}
+			if (delivery.volume >=25)
+			{
+				decreasedPriceVol = 0.5;
+			}
+			
+			delivery.price = delivery.distance*(trucker.pricePerKm*decreasedPriceVol) + delivery.volume * trucker.pricePerVolume;
+			console.log(delivery.id + ":");
+			console.log(delivery.price);
+		}
+	});
+});
+
+
+
+
+
+
+
+
+
+
+
+
