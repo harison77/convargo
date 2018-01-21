@@ -160,10 +160,11 @@ deliveries.forEach(function(delivery){
 		//price decrease depends on the volume 
 		//1 means there's no changes
 		var decreasedPriceVol = 1;
+		var deductible = 0;
 
 		if (trucker.id ==delivery.truckerId)
 		{
-
+			//calcul of the price depends on the volume
 			if ((delivery.volume >=5) && (delivery.volume <10))
 			{
 				decreasedPriceVol = 0.9;
@@ -177,10 +178,17 @@ deliveries.forEach(function(delivery){
 				decreasedPriceVol = 0.5;
 			}
 
-			//unique formula for the delivery price
+			//calcul of the deductible (1€/m3 if option==true)
+			if (delivery.options.deductibleReduction == true)
+			{
+				deductible = delivery.volume;
+			}
+
+
+			//1 unique formula for the delivery price
 			//display the id of the delivery
 			//display the price
-			delivery.price = delivery.distance*(trucker.pricePerKm*decreasedPriceVol) + delivery.volume * trucker.pricePerVolume;
+			delivery.price = delivery.distance*(trucker.pricePerKm*decreasedPriceVol) + delivery.volume * trucker.pricePerVolume + deductible;
 			console.log(delivery.id + ":");
 			console.log("delivery price = " + delivery.price);
 
