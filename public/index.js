@@ -157,56 +157,79 @@ deliveries.forEach(function(delivery){
 
 	truckers.forEach(function(trucker){
 
-		//price decrease depends on the volume 
-		//1 means there's no changes
-		var decreasedPriceVol = 1;
-		var deductible = 0;
+		actors.forEach(function(actor){
 
-		if (trucker.id ==delivery.truckerId)
-		{
-			//calcul of the price depends on the volume
-			if ((delivery.volume >=5) && (delivery.volume <10))
+			//price decrease depends on the volume 
+			//1 means there's no changes
+			var decreasedPriceVol = 1;
+			var deductible = 0;
+
+			if (trucker.id ==delivery.truckerId)
 			{
-				decreasedPriceVol = 0.9;
+				//calcul of the price depends on the volume
+				if ((delivery.volume >=5) && (delivery.volume <10))
+				{
+					decreasedPriceVol = 0.9;
+				}
+				if ((delivery.volume >=10) && (delivery.volume <25))
+				{
+					decreasedPriceVol = 0.7;
+				}
+				if (delivery.volume >=25)
+				{
+					decreasedPriceVol = 0.5;
+				}
+
+				//calcul of the deductible (1€/m3 if option==true)
+				if (delivery.options.deductibleReduction == true)
+				{
+					deductible = delivery.volume;
+				}
+
+
+				//1 unique formula for the delivery price
+				//display the id of the delivery
+				//display the price
+				delivery.price = delivery.distance*(trucker.pricePerKm*decreasedPriceVol) + delivery.volume * trucker.pricePerVolume + deductible;
+				
+				//uncomment for debug purposes
+				//console.log(delivery.id + ":");
+				//console.log("delivery price = " + delivery.price);
+
+				//defines the commission, 30% of the delivery price
+				var commission = delivery.price*0.3;
+
+				//split the commission
+				delivery.commission.insurance = commission/2;
+				delivery.commission.treasury = Math.ceil(delivery.distance/500);
+				delivery.commission.convargo = commission - delivery.commission.insurance - delivery.commission.treasury;
+
+				//display in the console 
+				//uncomment for debug purposes
+				//console.log("commission = "+commission);
+				//console.log("insurance = "+delivery.commission.insurance);
+				//console.log("convargo ="+delivery.commission.convargo);
+
+				
 			}
-			if ((delivery.volume >=10) && (delivery.volume <25))
+
+			if (actor.deliveryId == delivery.id)
 			{
-				decreasedPriceVol = 0.7;
+				actor.payment[0].amount = delivery.price;
+				actor.payment[1].amount	= 0.7*delivery.price;
+				actor.payment[2].amount	= delivery.commission.treasury;
+				actor.payment[3].amount	= delivery.commission.insurance;
+				actor.payment[4].amount	= delivery.commission.convargo;	
+
+				console.log(actor.deliveryId + ":");
+				console.log("who: " + actor.payment.who);
+				console.log("type: " + actor.payment.type)
+				console.log("amount: " + actor.payment.amount);	
 			}
-			if (delivery.volume >=25)
-			{
-				decreasedPriceVol = 0.5;
-			}
 
-			//calcul of the deductible (1€/m3 if option==true)
-			if (delivery.options.deductibleReduction == true)
-			{
-				deductible = delivery.volume;
-			}
-
-
-			//1 unique formula for the delivery price
-			//display the id of the delivery
-			//display the price
-			delivery.price = delivery.distance*(trucker.pricePerKm*decreasedPriceVol) + delivery.volume * trucker.pricePerVolume + deductible;
-			console.log(delivery.id + ":");
-			console.log("delivery price = " + delivery.price);
-
-			//defines the commission, 30% of the delivery price
-			var commission = delivery.price*0.3;
-
-			//split the commission
-			delivery.commission.insurance = commission/2;
-			delivery.commission.treasury = Math.ceil(delivery.distance/500);
-			delivery.commission.convargo = commission - delivery.commission.insurance - delivery.commission.treasury;
-
-			//display in the console 
-			console.log("commission = "+commission);
-			console.log("insurance = "+delivery.commission.insurance);
-			console.log("convargo ="+delivery.commission.convargo);
-
-		}
+		});
 	});
+
 });
 
 
